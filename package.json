@@ -16,6 +16,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "browser-sync": "^2.18.8",
     "eslint": "^3.13.1",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.1",

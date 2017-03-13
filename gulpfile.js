@@ -181,11 +181,21 @@ gulp.task('connect', function () {
     }));
 });
 
+// browserSync
+gulp.task('browserSync', function () {
+  browserSync.init({
+    server: {
+      baseDir: "./dist/"
+    }
+  });
+});
+
 // watch
 gulp.task('watch', ['copy'], function () {
   gulp.watch([global.ejs, global.excludeFile.ejs], ['ejs']);
   gulp.watch([global.scss, global.excludeFile.scss], ['sass']);
   gulp.watch([global.less, global.excludeFile.less], ['less']);
+  gulp.watch([global.js], ['minify']);
   gulp.watch([global.src + '/**/*.*', global.excludeFile.less, global.excludeFile.ejs], ['copy']);
 });
 
