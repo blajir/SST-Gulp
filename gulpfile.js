@@ -21,6 +21,7 @@ var autoprefix = new LessAutoprefix({
 
 // gulp-sass
 var sass = require('gulp-sass');
+var gcmq = require('gulp-group-css-media-queries');
 
 // gulp-webserver
 var webserver = require('gulp-webserver');
@@ -132,6 +133,8 @@ gulp.task('sass-build', function () {
     .pipe(sass({
       outputStyle: 'compressed'
     }).on('error', sass.logError))
+    .pipe(gcmq())
+    .pipe(cleanCSS())
     .pipe(gulp.dest(global.dist));
 });
 
