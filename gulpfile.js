@@ -211,12 +211,12 @@ gulp.task('delete-build', function (cb) {
 
 // Default
 gulp.task('default', function (callback) {
-  runSequence(['less', 'sass', 'ejs', 'copy'], 'connect', 'watch', callback);
+  runSequence(['less', 'sass', 'ejs', 'copy', 'minify'], 'connect', 'browserSync', 'watch', callback);
 });
 
 // build 納品ファイル作成
 gulp.task('build', function (callback) {
-  runSequence('delete-dist', ['less-build', 'sass-build', 'ejs', 'copy'], 'delete-build', 'build-copy', 'delete-dist', callback);
+  runSequence('delete-dist', ['less-build', 'sass-build', 'ejs', 'copy', 'minify'], 'delete-build', 'build-copy', 'delete-dist', callback);
 });
 
 // eslint
