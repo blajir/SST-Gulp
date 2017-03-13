@@ -21,13 +21,18 @@ var autoprefix = new LessAutoprefix({
 
 // gulp-sass
 var sass = require('gulp-sass');
+var autoprefixer = require('gulp-autoprefixer');
 var gcmq = require('gulp-group-css-media-queries');
 
 // gulp-webserver
 var webserver = require('gulp-webserver');
+var browserSync = require('browser-sync').create();
 
 // eslint
 var eslint = require('gulp-eslint');
+
+// javascript
+var uglify = require('gulp-uglify');
 
 // 共通変数
 var global = {
@@ -123,6 +128,10 @@ gulp.task('sass', function () {
     .pipe(sass({
       outputStyle: 'compressed'
     }).on('error', sass.logError))
+    .pipe(autoprefixer({
+      browsers: ['last 5 versions'],
+      cascade: false
+    }))
     .pipe(sourcemaps.write('sourcemaps'))
     .pipe(gulp.dest(global.dist));
 });
@@ -134,13 +143,24 @@ gulp.task('sass-build', function () {
       outputStyle: 'compressed'
     }).on('error', sass.logError))
     .pipe(gcmq())
+    .pipe(autoprefixer({
+      browsers: ['last 5 versions'],
+      cascade: false
+    }))
     .pipe(cleanCSS())
+    .pipe(gulp.dest(global.dist));
+});
+
+// gulp-uglify
+gulp.task('minify', function() {
+  gulp.src(global.js)
+    .pipe(uglify())
     .pipe(gulp.dest(global.dist));
 });
 
 // fileCopy
 gulp.task('copy', function () {
-  return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.less, '!' + global.scss])
+  return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.less, '!' + global.scss, '!' + global.js])
     .pipe(gulp.dest(global.dist));
 });
 
