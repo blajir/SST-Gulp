@@ -155,18 +155,18 @@ gulp.task('sass-build', function () {
 gulp.task('minify', function() {
   gulp.src(global.js)
     .pipe(uglify())
-    .pipe(gulp.dest(global.dist));
+    .pipe(gulp.dest(global.build));
 });
 
 // fileCopy
 gulp.task('copy', function () {
-  return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.less, '!' + global.scss, '!' + global.js])
+  return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.less, '!' + global.scss])
     .pipe(gulp.dest(global.dist));
 });
 
 // fileCopy
-gulp.task('build-copy', function () {
-  return gulp.src([global.dist + '/**/*.*'])
+gulp.task('build-copy', ['minify'], function () {
+  return gulp.src([global.dist + '/**/*.*', '!./dist/**/*.js'])
     .pipe(gulp.dest(global.build));
 });
 
@@ -195,7 +195,6 @@ gulp.task('watch', ['copy'], function () {
   gulp.watch([global.ejs, global.excludeFile.ejs], ['ejs']);
   gulp.watch([global.scss, global.excludeFile.scss], ['sass']);
   gulp.watch([global.less, global.excludeFile.less], ['less']);
-  gulp.watch([global.js], ['minify']);
   gulp.watch([global.src + '/**/*.*', global.excludeFile.less, global.excludeFile.ejs], ['copy']);
 });
 
@@ -211,12 +210,12 @@ gulp.task('delete-build', function (cb) {
 
 // Default
 gulp.task('default', function (callback) {
-  runSequence(['less', 'sass', 'ejs', 'copy', 'minify'], 'connect', 'browserSync', 'watch', callback);
+  runSequence(['less', 'sass', 'ejs', 'copy'], 'connect', 'browserSync', 'watch', callback);
 });
 
 // build 納品ファイル作成
 gulp.task('build', function (callback) {
-  runSequence('delete-dist', ['less-build', 'sass-build', 'ejs', 'copy', 'minify'], 'delete-build', 'build-copy', 'delete-dist', callback);
+  runSequence('delete-dist', ['less-build', 'sass-build', 'ejs', 'copy'], 'delete-build', 'build-copy', 'delete-dist', callback);
 });
 
 // eslint
