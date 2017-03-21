@@ -128,8 +128,10 @@ gulp.task('sass', function () {
     .pipe(sass({
       outputStyle: 'compressed'
     }).on('error', sass.logError))
+    .pipe(sourcemaps.write({includeContent: false}))
+    .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(autoprefixer({
-      browsers: ['last 5 versions'],
+      browsers: ["last 2 versions", "ie >= 11", "Android >= 4","ios_saf >= 8"],
       cascade: false
     }))
     .pipe(sourcemaps.write('sourcemaps'))
@@ -144,7 +146,7 @@ gulp.task('sass-build', function () {
     }).on('error', sass.logError))
     .pipe(gcmq())
     .pipe(autoprefixer({
-      browsers: ['last 5 versions'],
+      browsers: ["last 2 versions", "ie >= 11", "Android >= 4","ios_saf >= 8"],
       cascade: false
     }))
     .pipe(cleanCSS())
