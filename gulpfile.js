@@ -177,15 +177,15 @@ gulp.task('build-copy', function () {
 });
 
 // Webサーバー
-gulp.task('connect', function () {
-  gulp.src(global.dist)
-    .pipe(webserver({
-      fallback: 'index.html',
-      livereload: true,
-      open: true,
-      port: 8080
-    }));
-});
+// gulp.task('connect', () => {
+//   gulp.src(global.dist)
+//     .pipe(webserver({
+//       fallback: 'index.html',
+//       livereload: true,
+//       open: true,
+//       port: 8080
+//     }));
+// });
 
 // browserSync
 gulp.task('browserSync', function () {
@@ -221,8 +221,8 @@ gulp.task('delete-build', function (cb) {
 });
 
 // Default
-gulp.task('default', function (callback) {
-  runSequence(['less', 'sass', 'ejs', 'copy'],'webpack', 'connect', 'browserSync', 'watch', callback);
+gulp.task('default', (callback) => {
+  runSequence(['less', 'sass', 'ejs', 'copy'],'webpack', 'browserSync', 'watch', callback);
 });
 
 // build 納品ファイル作成
