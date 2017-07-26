@@ -35,6 +35,8 @@
     "less-plugin-autoprefix": "^1.5.1",
     "node-notifier": "^4.6.0",
     "rimraf": "^2.4.0",
-    "run-sequence": "^1.1.5"
+    "run-sequence": "^1.1.5",
+    "webpack": "^3.4.0",
+    "webpack-stream": "^3.2.0"
   }
 }

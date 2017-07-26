@@ -4,6 +4,10 @@ var plumber = require('gulp-plumber');
 var rimraf = require('rimraf');
 var runSequence = require('run-sequence');
 var notifier = require('node-notifier');
+const webpackStream = require('webpack-stream');
+const webpack = require('webpack');
+// webpackの設定ファイルの読み込み
+const webpackConfig = require('./webpack.config');
 
 // ejs
 var ejs = require('gulp-ejs');
@@ -162,13 +166,13 @@ gulp.task('minify', function() {
 
 // fileCopy
 gulp.task('copy', function () {
-  return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.less, '!' + global.scss])
+  return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.less, '!' + global.scss, '!' + global.js])
     .pipe(gulp.dest(global.dist));
 });
 
 // fileCopy
-gulp.task('build-copy', ['minify'], function () {
-  return gulp.src([global.dist + '/**/*.*', '!./dist/**/*.js'])
+gulp.task('build-copy', function () {
+  return gulp.src([global.dist + '/**/*.*', '!' + global.js])
     .pipe(gulp.dest(global.build));
 });
 
@@ -192,6 +196,12 @@ gulp.task('browserSync', function () {
   });
 });
 
+// webpack
+gulp.task('webpack', function () {
+  return webpackStream(webpackConfig, webpack)
+    .pipe(gulp.dest('./dist/js'));
+});
+
 // watch
 gulp.task('watch', ['copy'], function () {
   gulp.watch([global.ejs, global.excludeFile.ejs], ['ejs']);
@@ -212,7 +222,7 @@ gulp.task('delete-build', function (cb) {
 
 // Default
 gulp.task('default', function (callback) {
-  runSequence(['less', 'sass', 'ejs', 'copy'], 'connect', 'browserSync', 'watch', callback);
+  runSequence(['less', 'sass', 'ejs', 'copy'],'webpack', 'connect', 'browserSync', 'watch', callback);
 });
 
 // build 納品ファイル作成
