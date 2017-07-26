@@ -177,15 +177,15 @@ gulp.task('build-copy', () => {
 });
 
 // Webサーバー
-// gulp.task('connect', () => {
-//   gulp.src(global.dist)
-//     .pipe(webserver({
-//       fallback: 'index.html',
-//       livereload: true,
-//       open: true,
-//       port: 8080
-//     }));
-// });
+gulp.task('connect', () => {
+  gulp.src(global.dist)
+    .pipe(webserver({
+      fallback: 'index.html',
+      livereload: true,
+      open: true,
+      port: 8080
+    }));
+});
 
 // browserSync
 gulp.task('browserSync', () => {
@@ -195,6 +195,10 @@ gulp.task('browserSync', () => {
     }
   });
 });
+
+gulp.task('bs-reload', function() {
+  browserSync.reload();
+})
 
 // webpack
 gulp.task('webpack', () => {
@@ -223,7 +227,7 @@ gulp.task('delete-build', (cb) => {
 
 // Default
 gulp.task('default', (callback) => {
-  runSequence(['less', 'sass', 'ejs', 'copy', 'webpack'], 'browserSync', 'watch', callback);
+  runSequence(['less', 'sass', 'ejs', 'copy', 'webpack'], 'connect', 'watch', callback);
 });
 
 // build 納品ファイル作成
