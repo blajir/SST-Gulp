@@ -172,7 +172,7 @@ gulp.task('copy', () => {
 
 // fileCopy
 gulp.task('build-copy', () => {
-  return gulp.src([global.dist + '/**/*.*', '!' + global.js])
+  return gulp.src([global.dist + '/**/*.*'])
     .pipe(gulp.dest(global.build));
 });
 
@@ -222,12 +222,12 @@ gulp.task('delete-build', (cb) => {
 
 // Default
 gulp.task('default', (callback) => {
-  runSequence(['less', 'sass', 'ejs', 'copy'],'webpack', 'browserSync', 'watch', callback);
+  runSequence(['less', 'sass', 'ejs', 'copy', 'webpack'], 'browserSync', 'watch', callback);
 });
 
 // build 納品ファイル作成
 gulp.task('build', (callback) => {
-  runSequence('delete-dist', ['less-build', 'sass-build', 'ejs', 'copy'], 'delete-build', 'build-copy', 'delete-dist', callback);
+  runSequence('delete-dist', ['less-build', 'sass-build', 'ejs', 'copy', 'webpack'], 'delete-build', 'build-copy', 'delete-dist', callback);
 });
 
 // eslint
