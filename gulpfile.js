@@ -207,6 +207,7 @@ gulp.task('watch', ['copy'], () => {
   gulp.watch([global.ejs, global.excludeFile.ejs], ['ejs']);
   gulp.watch([global.scss, global.excludeFile.scss], ['sass']);
   gulp.watch([global.less, global.excludeFile.less], ['less']);
+  gulp.watch([global.js], ['webpack']);
   gulp.watch([global.src + '/**/*.*', global.excludeFile.less, global.excludeFile.ejs], ['copy']);
 });
 
