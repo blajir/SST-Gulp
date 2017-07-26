@@ -1,45 +1,45 @@
 // 共通機能
-var gulp = require('gulp');
-var plumber = require('gulp-plumber');
-var rimraf = require('rimraf');
-var runSequence = require('run-sequence');
-var notifier = require('node-notifier');
+const gulp = require('gulp');
+const plumber = require('gulp-plumber');
+const rimraf = require('rimraf');
+const runSequence = require('run-sequence');
+const notifier = require('node-notifier');
 const webpackStream = require('webpack-stream');
 const webpack = require('webpack');
 // webpackの設定ファイルの読み込み
 const webpackConfig = require('./webpack.config');
 
 // ejs
-var ejs = require('gulp-ejs');
-var rename = require('gulp-rename');
-var prettify = require('gulp-prettify');
+const ejs = require('gulp-ejs');
+const rename = require('gulp-rename');
+const prettify = require('gulp-prettify');
 
 // gulp-less
-var less = require('gulp-less');
-var cleanCSS = require('gulp-clean-css');
-var sourcemaps = require('gulp-sourcemaps');
-var LessAutoprefix = require('less-plugin-autoprefix');
-var autoprefix = new LessAutoprefix({
+const less = require('gulp-less');
+const cleanCSS = require('gulp-clean-css');
+const sourcemaps = require('gulp-sourcemaps');
+const LessAutoprefix = require('less-plugin-autoprefix');
+const autoprefix = new LessAutoprefix({
   browsers: ['last 5 versions']
 });
 
 // gulp-sass
-var sass = require('gulp-sass');
-var autoprefixer = require('gulp-autoprefixer');
-var gcmq = require('gulp-group-css-media-queries');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const gcmq = require('gulp-group-css-media-queries');
 
 // gulp-webserver
-var webserver = require('gulp-webserver');
-var browserSync = require('browser-sync').create();
+const webserver = require('gulp-webserver');
+const browserSync = require('browser-sync').create();
 
 // eslint
-var eslint = require('gulp-eslint');
+const eslint = require('gulp-eslint');
 
 // javascript
-var uglify = require('gulp-uglify');
+const uglify = require('gulp-uglify');
 
 // 共通変数
-var global = {
+const global = {
   src: './src',
   dist: './dist',
   build: './build',
@@ -56,8 +56,8 @@ var global = {
 
 
 // ejs modules
-var setPath = require('./ejs_modules/setPath');
-var setPathArray = {
+const setPath = require('./ejs_modules/setPath');
+const setPathArray = {
   // ルート相対フラグ （true:ルート相対, false:ファイル相対 初期値false）
   rootpath: false,
   // 作業フォルダの設定
@@ -65,11 +65,11 @@ var setPathArray = {
 }
 
 // gulp-ejs
-gulp.task('ejs', function () {
+gulp.task('ejs', () => {
   // ejs変換
   return gulp.src([global.ejs, global.excludeFile.ejs])
     .pipe(ejs({ setPathArray, setPath }))
-    .pipe(rename(function (path) {
+    .pipe(rename((path) => {
       path.extname = '.html';
     }))
     .pipe(prettify({
@@ -89,10 +89,10 @@ gulp.task('ejs', function () {
 });
 
 // gulp-less
-gulp.task('less', function () {
+gulp.task('less', () => {
   return gulp.src([global.less, global.excludeFile.less])
     .pipe(plumber({
-      errorHandler: function (err) {
+      errorHandler: (err) => {
         console.log(err);
         this.emit('end');
       }
@@ -110,13 +110,13 @@ gulp.task('less', function () {
 });
 
 // gulp-less (Exclusion SOURCEMAP)
-gulp.task('less-build', function () {
+gulp.task('less-build', () => {
   return gulp.src([global.less, global.excludeFile.less])
     .pipe(less({
       plugins: [autoprefix]
     }))
     .pipe(plumber({
-      errorHandler: function (err) {
+      errorHandler: (err) => {
         console.log(err);
         this.emit('end');
       }
@@ -126,7 +126,7 @@ gulp.task('less-build', function () {
 });
 
 // gulp-scss
-gulp.task('sass', function () {
+gulp.task('sass', () => {
   return gulp.src([global.scss, global.excludeFile.scss])
     .pipe(sourcemaps.init())
     .pipe(sass({
@@ -143,7 +143,7 @@ gulp.task('sass', function () {
 });
 
 // gulp-scss (Exclusion SOURCEMAP)
-gulp.task('sass-build', function () {
+gulp.task('sass-build', () => {
   return gulp.src([global.scss, global.excludeFile.scss])
     .pipe(sass({
       outputStyle: 'compressed'
@@ -158,20 +158,20 @@ gulp.task('sass-build', function () {
 });
 
 // gulp-uglify
-gulp.task('minify', function() {
-  gulp.src(global.js)
-    .pipe(uglify())
-    .pipe(gulp.dest(global.build));
-});
+// gulp.task('minify', function() {
+//   gulp.src(global.js)
+//     .pipe(uglify())
+//     .pipe(gulp.dest(global.build));
+// });
 
 // fileCopy
-gulp.task('copy', function () {
+gulp.task('copy', () => {
   return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.less, '!' + global.scss, '!' + global.js])
     .pipe(gulp.dest(global.dist));
 });
 
 // fileCopy
-gulp.task('build-copy', function () {
+gulp.task('build-copy', () => {
   return gulp.src([global.dist + '/**/*.*', '!' + global.js])
     .pipe(gulp.dest(global.build));
 });
@@ -188,7 +188,7 @@ gulp.task('build-copy', function () {
 // });
 
 // browserSync
-gulp.task('browserSync', function () {
+gulp.task('browserSync', () => {
   browserSync.init({
     server: {
       baseDir: "./dist/"
@@ -197,13 +197,13 @@ gulp.task('browserSync', function () {
 });
 
 // webpack
-gulp.task('webpack', function () {
+gulp.task('webpack', () => {
   return webpackStream(webpackConfig, webpack)
     .pipe(gulp.dest('./dist/js'));
 });
 
 // watch
-gulp.task('watch', ['copy'], function () {
+gulp.task('watch', ['copy'], () => {
   gulp.watch([global.ejs, global.excludeFile.ejs], ['ejs']);
   gulp.watch([global.scss, global.excludeFile.scss], ['sass']);
   gulp.watch([global.less, global.excludeFile.less], ['less']);
@@ -211,12 +211,12 @@ gulp.task('watch', ['copy'], function () {
 });
 
 // delete-dist
-gulp.task('delete-dist', function (cb) {
+gulp.task('delete-dist', (cb) => {
   rimraf(global.dist, cb);
 });
 
 // delete-build
-gulp.task('delete-build', function (cb) {
+gulp.task('delete-build', (cb) => {
   rimraf(global.build, cb);
 });
 
@@ -226,16 +226,16 @@ gulp.task('default', (callback) => {
 });
 
 // build 納品ファイル作成
-gulp.task('build', function (callback) {
+gulp.task('build', (callback) => {
   runSequence('delete-dist', ['less-build', 'sass-build', 'ejs', 'copy'], 'delete-build', 'build-copy', 'delete-dist', callback);
 });
 
 // eslint
-gulp.task('lint', function () {
+gulp.task('lint', () => {
   return gulp.src([global.js])
     .pipe(plumber({
       // エラーをハンドル
-      errorHandler: function (error) {
+      errorHandler: (error) => {
         var taskName = 'eslint';
         var title = '[task]' + taskName + ' ' + error.plugin;
         var errorMsg = 'error: ' + error.message;
