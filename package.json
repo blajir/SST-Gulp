@@ -30,6 +30,7 @@
     "gulp-less": "^3.0.3",
     "gulp-plumber": "^1.0.1",
     "gulp-prettify": "^0.5.0",
+    "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.3.1",
     "gulp-uglify": "^2.1.0",
