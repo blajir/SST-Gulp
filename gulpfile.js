@@ -108,11 +108,11 @@ gulp.task('sass-build', () => {
 });
 
 // gulp-uglify
-// gulp.task('minify', function() {
-//   gulp.src(global.js)
-//     .pipe(uglify())
-//     .pipe(gulp.dest(global.build));
-// });
+gulp.task('minify', () => {
+  gulp.src(global.dist + '/js/*.*')
+    .pipe(uglify())
+    .pipe(gulp.dest(global.build + '/js'));
+});
 
 // fileCopy
 gulp.task('copy', () => {
@@ -122,7 +122,7 @@ gulp.task('copy', () => {
 
 // fileCopy
 gulp.task('build-copy', () => {
-  return gulp.src([global.dist + '/**/*.*'])
+  return gulp.src([global.dist + '/**/*.*', '!' + global.dist + '/js/*.*' ])
     .pipe(gulp.dest(global.build));
 });
 
@@ -146,7 +146,7 @@ gulp.task('browserSync', () => {
   });
 });
 
-gulp.task('bs-reload', function() {
+gulp.task('bs-reload', () => {
   browserSync.reload();
 })
 
@@ -181,7 +181,7 @@ gulp.task('default', (callback) => {
 
 // build 納品ファイル作成
 gulp.task('build', (callback) => {
-  runSequence('delete-dist', ['sass-build', 'ejs', 'copy', 'webpack'], 'delete-build', 'build-copy', 'delete-dist', callback);
+  runSequence('delete-dist', ['sass-build', 'ejs', 'copy', 'webpack'], 'delete-build', 'build-copy', 'minify', 'delete-dist', callback);
 });
 
 // eslint
