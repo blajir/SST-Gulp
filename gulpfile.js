@@ -11,7 +11,6 @@ const webpackConfig = require('./webpack.config');
 
 // ejs
 const ejs = require('gulp-ejs');
-const rename = require('gulp-rename');
 const prettify = require('gulp-prettify');
 
 // gulp-less
@@ -68,10 +67,7 @@ const setPathArray = {
 gulp.task('ejs', () => {
   // ejs変換
   return gulp.src([global.ejs, global.excludeFile.ejs])
-    .pipe(ejs({ setPathArray, setPath }))
-    .pipe(rename((path) => {
-      path.extname = '.html';
-    }))
+    .pipe(ejs({ setPathArray, setPath }, {}, {'ext': '.html'}))
     .pipe(prettify({
       indent_with_tabs: false,
       indent_size: 2,
