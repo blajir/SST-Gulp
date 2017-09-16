@@ -1,0 +1,14 @@
+{
+    "search.exclude": {
+        "dist": true,
+        "build": true,
+        "node_modules": true,
+        "npm-debug.log": true
+    },
+    "files.exclude": {
+        "dist": true,
+        "build": true,
+        "node_modules": true,
+        "npm-debug.log": true
+    }
+}

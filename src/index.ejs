@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
   <%
-  path = setPath(setPathArray, filename);
+  path = setPath(setPathArray, __filename);
 
   title = 'ページタイトル';
   description = 'サイトデスクリプション';
@@ -15,7 +15,6 @@
     <link href="<%= path %>/css/style.css" rel="stylesheet">
     <link href="<%= path %>/css/index.css" rel="stylesheet">
     <%- include('_include/_script.ejs') %>
-    <script src="<%= path %>/js/bundle.js"></script>
     <script>
       const PATH = '<%= path %>';
     </script>
@@ -24,11 +23,12 @@
   <body>
     <%- include('_include/_header.ejs') %>
 
-    <div class="contents">
+    <div id="hoge" class="contents">
       <p>コンテンツが入ります</p>
       <%- include('_include/_block.ejs', {data: 'test'}) %>
     </div>
 
     <%- include('_include/_footer.ejs') %>
+    <script src="<%= path %>/js/bundle.js"></script>
   </body>
 </html>

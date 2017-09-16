@@ -11,22 +11,14 @@ const webpackConfig = require('./webpack.config');
 
 // ejs
 const ejs = require('gulp-ejs');
-const rename = require('gulp-rename');
 const prettify = require('gulp-prettify');
-
-// gulp-less
-const less = require('gulp-less');
-const cleanCSS = require('gulp-clean-css');
-const sourcemaps = require('gulp-sourcemaps');
-const LessAutoprefix = require('less-plugin-autoprefix');
-const autoprefix = new LessAutoprefix({
-  browsers: ['last 5 versions']
-});
 
 // gulp-sass
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const gcmq = require('gulp-group-css-media-queries');
+const cleanCSS = require('gulp-clean-css');
+const sourcemaps = require('gulp-sourcemaps');
 
 // gulp-webserver
 const webserver = require('gulp-webserver');
@@ -43,12 +35,10 @@ const global = {
   src: './src',
   dist: './dist',
   build: './build',
-  less: './src/**/*.less',
   scss: './src/**/*.scss',
   ejs: './src/**/*.ejs',
   js: './src/**/*.js',
   excludeFile: {
-    less: '!./src/**/_*.less',
     scss: '!./src/**/_*.scss',
     ejs: '!./src/**/_*.ejs'
   }
@@ -68,10 +58,7 @@ const setPathArray = {
 gulp.task('ejs', () => {
   // ejs変換
   return gulp.src([global.ejs, global.excludeFile.ejs])
-    .pipe(ejs({ setPathArray, setPath }))
-    .pipe(rename((path) => {
-      path.extname = '.html';
-    }))
+    .pipe(ejs({ setPathArray, setPath }, {}, {'ext': '.html'}))
     .pipe(prettify({
       indent_with_tabs: false,
       indent_size: 2,
@@ -85,43 +72,6 @@ gulp.task('ejs', () => {
         'label', 'select', 'textarea',
       ]
     }))
-    .pipe(gulp.dest(global.dist));
-});
-
-// gulp-less
-gulp.task('less', () => {
-  return gulp.src([global.less, global.excludeFile.less])
-    .pipe(plumber({
-      errorHandler: (err) => {
-        console.log(err);
-        this.emit('end');
-      }
-    }))
-    .pipe(less({
-      sourceMap: {
-        sourceMapFileInline: true
-      },
-      plugins: [autoprefix]
-    }))
-    .pipe(sourcemaps.init())
-    .pipe(cleanCSS())
-    .pipe(sourcemaps.write('sourcemaps'))
-    .pipe(gulp.dest(global.dist));
-});
-
-// gulp-less (Exclusion SOURCEMAP)
-gulp.task('less-build', () => {
-  return gulp.src([global.less, global.excludeFile.less])
-    .pipe(less({
-      plugins: [autoprefix]
-    }))
-    .pipe(plumber({
-      errorHandler: (err) => {
-        console.log(err);
-        this.emit('end');
-      }
-    }))
-    .pipe(cleanCSS())
     .pipe(gulp.dest(global.dist));
 });
 
@@ -158,21 +108,21 @@ gulp.task('sass-build', () => {
 });
 
 // gulp-uglify
-// gulp.task('minify', function() {
-//   gulp.src(global.js)
-//     .pipe(uglify())
-//     .pipe(gulp.dest(global.build));
-// });
+gulp.task('minify', () => {
+  gulp.src(global.dist + '/js/*.*')
+    .pipe(uglify())
+    .pipe(gulp.dest(global.build + '/js'));
+});
 
 // fileCopy
 gulp.task('copy', () => {
-  return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.less, '!' + global.scss, '!' + global.js])
+  return gulp.src([global.src + '/**/*.*', '!' + global.ejs, '!' + global.scss, '!' + global.js])
     .pipe(gulp.dest(global.dist));
 });
 
 // fileCopy
 gulp.task('build-copy', () => {
-  return gulp.src([global.dist + '/**/*.*'])
+  return gulp.src([global.dist + '/**/*.*', '!' + global.dist + '/js/*.*' ])
     .pipe(gulp.dest(global.build));
 });
 
@@ -196,7 +146,7 @@ gulp.task('browserSync', () => {
   });
 });
 
-gulp.task('bs-reload', function() {
+gulp.task('bs-reload', () => {
   browserSync.reload();
 })
 
@@ -210,9 +160,8 @@ gulp.task('webpack', () => {
 gulp.task('watch', ['copy'], () => {
   gulp.watch([global.ejs, global.excludeFile.ejs], ['ejs']);
   gulp.watch([global.scss, global.excludeFile.scss], ['sass']);
-  gulp.watch([global.less, global.excludeFile.less], ['less']);
   gulp.watch([global.js], ['webpack']);
-  gulp.watch([global.src + '/**/*.*', global.excludeFile.less, global.excludeFile.ejs], ['copy']);
+  gulp.watch([global.src + '/**/*.*', global.excludeFile.scss, global.excludeFile.ejs], ['copy']);
 });
 
 // delete-dist
@@ -227,12 +176,12 @@ gulp.task('delete-build', (cb) => {
 
 // Default
 gulp.task('default', (callback) => {
-  runSequence(['less', 'sass', 'ejs', 'copy', 'webpack'], 'connect', 'watch', callback);
+  runSequence(['sass', 'ejs', 'copy', 'webpack'], 'connect', 'watch', callback);
 });
 
 // build 納品ファイル作成
 gulp.task('build', (callback) => {
-  runSequence('delete-dist', ['less-build', 'sass-build', 'ejs', 'copy', 'webpack'], 'delete-build', 'build-copy', 'delete-dist', callback);
+  runSequence('delete-dist', ['sass-build', 'ejs', 'copy', 'webpack'], 'delete-build', 'build-copy', 'minify', 'delete-dist', callback);
 });
 
 // eslint
