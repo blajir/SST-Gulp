@@ -15,6 +15,7 @@ const prettify = require('gulp-prettify');
 
 // gulp-sass
 const sass = require('gulp-sass');
+const sassGlob = require('gulp-sass-glob');
 const autoprefixer = require('gulp-autoprefixer');
 const gcmq = require('gulp-group-css-media-queries');
 const cleanCSS = require('gulp-clean-css');
@@ -29,6 +30,10 @@ const eslint = require('gulp-eslint');
 
 // javascript
 const uglify = require('gulp-uglify');
+
+// sitemap
+var sitemap = require('gulp-sitemap');
+
 
 // 共通変数
 const global = {
@@ -71,6 +76,17 @@ gulp.task('ejs', () => {
         'q', 'span', 'sub', 'sup', 'button', 'input',
         'label', 'select', 'textarea',
       ]
+    }))
+    .pipe(gulp.dest(global.dist));
+});
+
+// sitemap
+gulp.task('sitemap', () => {
+  gulp.src([global.dist + '/**/*.html', '!' + global.dist + '/_filelist.html'], {
+      read: false
+    })
+    .pipe(sitemap({
+      siteUrl: './'
     }))
     .pipe(gulp.dest(global.dist));
 });
@@ -127,23 +143,14 @@ gulp.task('build-copy', () => {
 });
 
 // Webサーバー
-gulp.task('connect', () => {
-  gulp.src(global.dist)
-    .pipe(webserver({
-      fallback: 'index.html',
-      livereload: true,
-      open: true,
-      port: 8080
-    }));
-});
-
-// browserSync
 gulp.task('browserSync', () => {
-  browserSync.init({
-    server: {
-      baseDir: "./dist/"
-    }
-  });
+    browserSync.init({
+        server: {
+            baseDir: global.dist
+        },
+        open: 'external', //localhostではなくローカルIPでWebサーバー立ち上げ
+        startPath: './_filelist.html'　//初期表示ページを指定
+    });
 });
 
 gulp.task('bs-reload', () => {
@@ -176,7 +183,7 @@ gulp.task('delete-build', (cb) => {
 
 // Default
 gulp.task('default', (callback) => {
-  runSequence(['sass', 'ejs', 'copy', 'webpack'], 'connect', 'watch', callback);
+  runSequence(['sass', 'ejs', 'copy', 'webpack'], 'sitemap', 'browserSync', 'watch', callback);
 });
 
 // build 納品ファイル作成
