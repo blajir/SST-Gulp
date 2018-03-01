@@ -7,9 +7,7 @@
     <meta name="description" content="">
     <meta name="keywords" content="">
     <title>sitemap</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   </head>
   <body>
     <div class="bd-pageheader">
@@ -32,50 +30,69 @@
         </table>
       </div>
     </div>
-    <script type="text/babel">
-      (function ($) {
-        'use strict';
+    <script async="false">
+      // サイトマップ情報を取得するクラス
+      class Main {
+        // 初期実行
+        // sitemap.xmlを取得する
+        constructor () {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', 'sitemap.xml', false);
 
-        // sitemapファイルの取得
-        function getSitemap () {
-          return $.ajax({
-            url: 'sitemap.xml',
-            type: 'GET',
-            dataType: 'xml',
-            async: false
-          })
+          xhr.onload = (e) => {
+            const target = document.querySelector('#sitemap');
+            const resonseXML = e.srcElement.responseXML;
+            const locs = resonseXML.querySelectorAll('loc');
+
+            locs.forEach((loc, i) => {
+              target.insertAdjacentHTML(
+                'beforeend',
+                `<tr>
+                  <th scope="row">${i}</th>
+                  <td>
+                    ${this.getFileName(loc)}
+                  </td>
+                  <td>
+                    <a href="${loc.innerHTML}">${loc.innerHTML}</a>
+                  </td>
+                </tr>`
+              );
+            });
+          };
+
+          xhr.onerror = () => {
+            console.log(`Error! Can't get sitemap.xml.`);
+          };
+
+          xhr.send();
         }
 
-        // sitemapファイルの処理
-        getSitemap().done((result) => {
-          $(result).find('loc').each((i, el) => {
-            var url = $(el).text();
-            var fileName = url;
-            var fileTitle = null;
+        // HTMLファイルのタイトルを取得する関数
+        getFileName (element) {
+          const fileXhr = new XMLHttpRequest();
+          const filePath = element.innerHTML;
+          let title;
 
-            function getFileName() {
-              return $.ajax({
-                url: fileName,
-                type: 'GET',
-                dataType: 'html',
-                async: false
-              })
-            }
+          fileXhr.open('GET', filePath, false);
 
-            getFileName().done((fileData) => {
-              fileData = fileData.replace(/\n/g, '');
-              var fileTitle = fileData.match(/<title>(.*)<\/title>/)[1];
-              $('#sitemap').append(`<tr><th scope="row">${i}</th><td><a href="${url}">${fileTitle}</a></td><td><a href="${url}">${url}</a></td></tr>`);
-            }).fail((fileData) => {
-              console.log('Error! Can\'t get file.');
-            })
+          fileXhr.onload = (e) => {
+            const htmlContent = e.srcElement.response;
+            const start = htmlContent.indexOf('<title>');
+            const end = htmlContent.indexOf('</title>');
+            title = htmlContent.substring(start + 7, end);
+          };
 
-          })
-        }).fail((result) => {
-          console.log('Error! Can\'t get sitemap.xml.');
-        });
+          fileXhr.onerror = () => {
+            console.log(`Error! Can't get ${element}.`);
+          };
 
-      }(jQuery));
+          fileXhr.send();
+
+          return title;
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => new Main());
     </script>
   </body>
 </html>
